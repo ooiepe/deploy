@@ -1,0 +1,27 @@
+[submodule "sites/all/modules/custom/epe_wp"]
+	path = sites/all/modules/custom/epe_wp
+	url = git@github.com:ooiepe/epe_wp.git
+[submodule "sites/all/modules/custom/epe_dbvideo"]
+	path = sites/all/modules/custom/epe_dbvideo
+	url = git@github.com:ooiepe/epe_dbvideo.git
+[submodule "sites/all/modules/custom/epe_dbmultimedia"]
+	path = sites/all/modules/custom/epe_dbmultimedia
+	url = git@github.com:ooiepe/epe_dbmultimedia.git
+[submodule "sites/all/modules/custom/epe_dbimage"]
+	path = sites/all/modules/custom/epe_dbimage
+	url = git@github.com:ooiepe/epe_dbimage.git
+[submodule "sites/all/modules/custom/epe_dbfiles"]
+	path = sites/all/modules/custom/epe_dbfiles
+	url = git@github.com:ooiepe/epe_dbfiles.git
+[submodule "sites/all/modules/custom/epe_dbdocument"]
+	path = sites/all/modules/custom/epe_dbdocument
+	url = git@github.com:ooiepe/epe_dbdocument.git
+[submodule "sites/all/modules/custom/epe_dbaudio"]
+	path = sites/all/modules/custom/epe_dbaudio
+	url = git@github.com:ooiepe/epe_dbaudio.git
+[submodule "sites/all/modules/custom/epe_dbresource_browser"]
+	path = sites/all/modules/custom/epe_dbresource_browser
+	url = git@github.com:ooiepe/epe_dbresource_browser.git
+[submodule "sites/all/modules/custom/epe_ev"]
+	path = sites/all/modules/custom/epe_ev
+	url = git@github.com:ooiepe/epe_ev.git
