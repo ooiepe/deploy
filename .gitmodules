@@ -25,3 +25,6 @@
 [submodule "sites/all/modules/custom/epe_ev"]
 	path = sites/all/modules/custom/epe_ev
 	url = git@github.com:ooiepe/epe_ev.git
+[submodule "sites/all/modules/custom/epe_db"]
+	path = sites/all/modules/custom/epe_db
+	url = git@github.com:ooiepe/epe_db.git
