@@ -88,10 +88,10 @@ function angularjs_library() {
 /**
  * Initializes an AngularJS application setting the application name, the base path
  * and adds the library
- * 
+ *
  * @param string $name
  *   The application name
- *   
+ *
  * @param string $base_href
  *   The base href, defaults to current page if nothing is entered
  */
@@ -100,7 +100,7 @@ function angularjs_init_application($name, $base_href = NULL) {
   if (NULL == $base_href) {
     $base_href = url($_GET['q']) . '/';
   }
-  
+
   angularjs_set_app_name($name);
   angularjs_set_base_href($base_href);
   drupal_add_library('angularjs', 'angularjs');
@@ -108,7 +108,7 @@ function angularjs_init_application($name, $base_href = NULL) {
 
 /**
  * Gets the AngularJS application name for the current request / page
- * 
+ *
  * @return string
  */
 function angularjs_get_app_name() {
@@ -117,22 +117,22 @@ function angularjs_get_app_name() {
 
 /**
  * Sets AngularJS application name for the current request / page
- * 
+ *
  * @param string $app_name
  *   The application name
- *   
+ *
  * @return string
  */
 function angularjs_set_app_name($app_name) {
   $name = &drupal_static('angularjs_app_name');
   $name = $app_name;
-  
+
   return $name;
 }
 
 /**
  * Gets the current base tag
- * 
+ *
  * @return string
  */
 function angularjs_get_base_href() {
@@ -141,32 +141,32 @@ function angularjs_get_base_href() {
 
 /**
  * Sets the current base tag
- * 
+ *
  * @param string $base_href
  *   The base href for the application
- *   
+ *
  * @return string
  */
 function angularjs_set_base_href($base_href) {
   $href = &drupal_static('angularjs_base_href');
   $href = $base_href;
-  
+
   return $href;
 }
 
 /**
  * Implements hook_preprocess_html
- * 
+ *
  * Adds <base> tag and sets ng-app attribute if provided
  */
 function angularjs_preprocess_html(&$vars) {
   $app_name = angularjs_get_app_name();
   $base_href = angularjs_get_base_href();
-  
+
   if (FALSE === empty($app_name)) {
     $vars['attributes_array']['ng-app'] = $app_name;
   }
-  
+
   if (FALSE === empty($base_href)) {
     drupal_add_html_head(array('#tag' => 'base', '#attributes' => array('href' => $base_href)), 'angularjs_base_href');
   }
@@ -228,11 +228,13 @@ function angularjs_theme() {
 function angularjs_process_select($element, $form_state) {
   // Pass the option to JS.
   $options = array();
-  foreach ($element['#options'] as $value => $name) {
+  /* $element['#options'] is the wrong array element,  */
+  /*foreach ($element['#options'] as $value => $name) {*/
+  foreach ($element['element']['#options'] as $value => $name) {
     $options[] = array('value' => $value, 'name' => $name);
 
   }
-  
+
   if (TRUE === isset($element['#ng_controller'])) {
     $data['angularjs'][$element['#ng_controller']][$element['#ng_model']] = array(
       'options' => $options,
@@ -241,13 +243,13 @@ function angularjs_process_select($element, $form_state) {
       '_type' => 'select',
       '_name' => $element['#name'],
     );
-  
+
     $element['#attached']['js'][] = array(
       'type' => 'setting',
       'data' => $data,
     );
   }
-  
+
   return $element;
 }
 
