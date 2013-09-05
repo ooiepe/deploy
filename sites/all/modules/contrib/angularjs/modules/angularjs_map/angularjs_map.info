@@ -11,6 +11,7 @@ dependencies[] = feeds
 dependencies[] = geofield
 dependencies[] = jquery_update
 dependencies[] = number
+dependencies[] = restws
 dependencies[] = restws_search_api
 dependencies[] = search_api
 dependencies[] = strongarm
@@ -66,9 +67,9 @@ features_exclude[field][node-earthquake-field_epicenter_distance] = node-earthqu
 features_exclude[field][node-earthquake-field_location] = node-earthquake-field_location
 project path = sites/all/modules/custom/angularjs/modules
 
-; Information added by drupal.org packaging script on 2013-06-06
+; Information added by drupal.org packaging script on 2013-08-15
 version = "7.x-1.x-dev"
 core = "7.x"
 project = "angularjs"
-datestamp = "1370478787"
+datestamp = "1376526808"
 
