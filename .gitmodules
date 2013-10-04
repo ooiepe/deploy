@@ -34,3 +34,6 @@
 [submodule "sites/all/themes/epe_theme"]
 	path = sites/all/themes/epe_theme
 	url = git@github.com:ooiepe/epe_theme.git
+[submodule "sites/all/modules/custom/epe_llb"]
+	path = sites/all/modules/custom/epe_llb
+	url = git@github.com:ooiepe/epe_llb.git
