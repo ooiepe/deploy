@@ -12,7 +12,8 @@ function clone_help($path, $arg) {
     case 'node/%/clone':
       $method = variable_get('clone_method', 'prepopulate');
       if ($method == 'prepopulate') {
-        return t('This clone will not be saved to the database until you submit.');
+        // JW: updated
+        return t('This copy will not be saved to the database until you submit.');
       }
   }
 }
