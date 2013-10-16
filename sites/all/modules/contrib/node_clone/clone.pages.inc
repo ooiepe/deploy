@@ -46,7 +46,7 @@ function clone_settings($form, &$form_state) {
     $form['publishing']['clone_reset_'. $type] = array(
       '#type' => 'checkbox',
       '#title' => t('@s: reset publishing options when cloned', array('@s' => $name)),
-      '#default_value' => variable_get('clone_reset_'. $type, FALSE),
+      '#default_value' => variable_get('clone_reset_'. $type, TRUE),
     );
   }
 
@@ -178,6 +178,12 @@ function clone_node_prepopulate($original_node) {
       // Let other modules do special fixing up.
       $context = array('method' => 'prepopulate', 'original_node' => $original_node);
       drupal_alter('clone_node', $node, $context);
+
+
+      // reset our public status to private
+      $node->field_public_status[$node->language][0]['value'] = 'Private';
+
+
       // Make sure the file defining the node form is loaded.
       $form_state = array();
       $form_state['build_info']['args'] = array($node);
