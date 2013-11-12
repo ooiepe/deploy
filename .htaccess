@@ -137,3 +137,7 @@ DirectoryIndex index.php index.html index.htm
     </FilesMatch>
   </IfModule>
 </IfModule>
+
+# EPE - Added to support larger uploads
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
