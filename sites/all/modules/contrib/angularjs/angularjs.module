@@ -343,8 +343,9 @@ function angularjs_process_select($element, $form_state) {
   // Pass the option to JS.
   $options = array();
   
-  if (TRUE === isset($element['#options'])) {
-    foreach($element['#options'] as $value => $name) {
+/* EPE Patch: $element['#options'] is the wrong array element  */
+  if (TRUE === isset($element['element']['#options'])) {
+    foreach($element['element']['#options'] as $value => $name) {
       $options[] = array(
         'value' => $value,
         'name' => $name 
