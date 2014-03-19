@@ -180,8 +180,9 @@ function clone_node_prepopulate($original_node) {
       drupal_alter('clone_node', $node, $context);
 
 
-      // reset our public status to private
+      // reset our public and featured status to private
       $node->field_public_status[$node->language][0]['value'] = 'Private';
+      $node->field_featured_status[$node->language][0]['value'] = 'Not-Featured';
 
 
       // Make sure the file defining the node form is loaded.
