@@ -1,3 +1,6 @@
 [submodule "sites/all/themes/epe_theme"]
 	path = sites/all/themes/epe_theme
 	url = git@github.com:ooiepe/epe_theme.git
+[submodule "sites/all/modules/epe_modules"]
+	path = sites/all/modules/epe_modules
+	url = git@github.com:ooiepe/epe_modules.git
