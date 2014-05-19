@@ -183,6 +183,7 @@ function clone_node_prepopulate($original_node) {
       // reset our public and featured status to private
       $node->field_public_status[$node->language][0]['value'] = 'Private';
       $node->field_featured_status[$node->language][0]['value'] = 'Not-Featured';
+      $node->field_source_nid[$node->language][0]['value'] = $original_node->nid;
 
 
       // Make sure the file defining the node form is loaded.
