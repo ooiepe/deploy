@@ -1,5 +1,4 @@
 <?php
-// $Id: views-views-rdf-style-doap.tpl.php,v 1.1.2.1 2010/07/16 04:39:03 allisterbeharry Exp $
 /**
  * @file views-views-rdf-style-doap.tpl.php
  * Default template for the Views RDF style plugin using the DOAP vocabulary
@@ -61,7 +60,8 @@ else if ($options['using_views_api_mode']) {     // We're in Views API mode.
   print $xml;
 }
 else {
-  drupal_set_header("Content-Type: $content_type; charset=utf-8");
+  drupal_add_http_header("Content-Type", "$content_type; charset=utf-8");
   print $xml;
+  drupal_page_footer();
   exit;
 }
