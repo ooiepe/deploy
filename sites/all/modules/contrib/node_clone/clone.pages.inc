@@ -219,7 +219,7 @@ function _clone_node_prepare($original_node, $prefix_title = FALSE, $account = N
   $node->path = NULL;
   $node->files = array();
   if ($prefix_title) {
-    $node->title = t('Clone of !title', array('!title' => $node->title));
+    $node->title = t('Copy of !title', array('!title' => $node->title));
   }
   // Add an extra property as a flag.
   $node->clone_from_original_nid = $original_node->nid;
@@ -232,6 +232,13 @@ function _clone_node_prepare($original_node, $prefix_title = FALSE, $account = N
       $node->$key = (int) in_array($key, $node_options);
     }
   }
+  // reset our public and featured status to private
+  $node->status = 0;
+  $node->field_public_status[$node->language][0]['value'] = 'Private';
+  $node->field_featured_status[$node->language][0]['value'] = 'Not-Featured';
+  $node->field_source_nid[$node->language][0]['value'] = $original_node->nid;
+
+
   return $node;
 }
 
