@@ -1,25 +1,15 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiAlterBundleFilter.
- */
-
-/**
- * Represents a data alteration that restricts entity indexes to some bundles.
+ * Search API data alteration callback that filters out items based on their
+ * bundle.
  */
 class SearchApiAlterBundleFilter extends SearchApiAbstractAlterCallback {
 
-  /**
-   * {@inheritdoc}
-   */
   public function supportsIndex(SearchApiIndex $index) {
     return $index->getEntityType() && ($info = entity_get_info($index->getEntityType())) && self::hasBundles($info);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function alterItems(array &$items) {
     $info = entity_get_info($this->index->getEntityType());
     if (self::hasBundles($info) && isset($this->options['bundles'])) {
@@ -34,9 +24,6 @@ class SearchApiAlterBundleFilter extends SearchApiAbstractAlterCallback {
     }
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function configurationForm() {
     $info = entity_get_info($this->index->getEntityType());
     if (self::hasBundles($info)) {
@@ -75,13 +62,8 @@ class SearchApiAlterBundleFilter extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * Determines whether a certain entity type has any bundles.
-   *
-   * @param array $entity_info
-   *   The entity type's entity_get_info() array.
-   *
-   * @return bool
-   *   TRUE if the entity type has bundles, FASLE otherwise.
+   * Helper method for figuring out if the entities with the given entity info
+   * can be filtered by bundle.
    */
   protected static function hasBundles(array $entity_info) {
     return !empty($entity_info['entity keys']['bundle']) && !empty($entity_info['bundles']);

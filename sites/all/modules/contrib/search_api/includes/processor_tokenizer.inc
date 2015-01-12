@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiTokenizer.
- */
-
-/**
  * Processor for tokenizing fulltext data by replacing (configurable)
  * non-letters with spaces.
  */

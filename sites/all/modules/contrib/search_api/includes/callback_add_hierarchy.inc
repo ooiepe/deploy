@@ -1,12 +1,7 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiAlterAddHierarchy.
- */
-
-/**
- * Adds all ancestors for hierarchical fields.
+ * Search API data alteration callback that adds an URL field for all items.
  */
 class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
 
@@ -20,16 +15,24 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
   protected $field_options;
 
   /**
-   * Overrides SearchApiAbstractAlterCallback::supportsIndex().
+   * Enable this data alteration only if any hierarchical fields are available.
    *
-   * Returns TRUE only if any hierarchical fields are available.
+   * @param SearchApiIndex $index
+   *   The index to check for.
+   *
+   * @return boolean
+   *   TRUE if the callback can run on the given index; FALSE otherwise.
    */
   public function supportsIndex(SearchApiIndex $index) {
     return (bool) $this->getHierarchicalFields();
   }
 
   /**
-   * {@inheritdoc}
+   * Display a form for configuring this callback.
+   *
+   * @return array
+   *   A form array for configuring this callback, or FALSE if no configuration
+   *   is possible.
    */
   public function configurationForm() {
     $options = $this->getHierarchicalFields();
@@ -51,7 +54,19 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * {@inheritdoc}
+   * Submit callback for the form returned by configurationForm().
+   *
+   * This method should both return the new options and set them internally.
+   *
+   * @param array $form
+   *   The form returned by configurationForm().
+   * @param array $values
+   *   The part of the $form_state['values'] array corresponding to this form.
+   * @param array $form_state
+   *   The complete form state.
+   *
+   * @return array
+   *   The new options array for this callback.
    */
   public function configurationFormSubmit(array $form, array &$values, array &$form_state) {
     // Change the saved type of fields in the index, if necessary.
@@ -59,7 +74,7 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
       $fields = &$this->index->options['fields'];
       $previous = drupal_map_assoc($this->options['fields']);
       foreach ($values['fields'] as $field) {
-        list($key) = explode(':', $field);
+        list($key, $prop) = explode(':', $field);
         if (empty($previous[$field]) && isset($fields[$key]['type'])) {
           $fields[$key]['type'] = 'list<' . search_api_extract_inner_type($fields[$key]['type']) . '>';
           $change = TRUE;
@@ -67,7 +82,7 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
       }
       $new = drupal_map_assoc($values['fields']);
       foreach ($previous as $field) {
-        list($key) = explode(':', $field);
+        list($key, $prop) = explode(':', $field);
         if (empty($new[$field]) && isset($fields[$key]['type'])) {
           $w = $this->index->entityWrapper(NULL, FALSE);
           if (isset($w->$key)) {
@@ -87,11 +102,19 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * {@inheritdoc}
+   * Alter items before indexing.
+   *
+   * Items which are removed from the array won't be indexed, but will be marked
+   * as clean for future indexing. This could for instance be used to implement
+   * some sort of access filter for security purposes (e.g., don't index
+   * unpublished nodes or comments).
+   *
+   * @param array $items
+   *   An array of items to be altered, keyed by item IDs.
    */
   public function alterItems(array &$items) {
     if (empty($this->options['fields'])) {
-      return;
+      return array();
     }
     foreach ($items as $item) {
       $wrapper = $this->index->entityWrapper($item, FALSE);
@@ -114,7 +137,16 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * {@inheritdoc}
+   * Declare the properties that are (or can be) added to items with this
+   * callback. If a property with this name already exists for an entity it
+   * will be overridden, so keep a clear namespace by prefixing the properties
+   * with the module name if this is not desired.
+   *
+   * @see hook_entity_property_info()
+   *
+   * @return array
+   *   Information about all additional properties, as specified by
+   *   hook_entity_property_info() (only the inner "properties" array).
    */
   public function propertyInfo() {
     if (empty($this->options['fields'])) {
@@ -156,7 +188,7 @@ class SearchApiAlterAddHierarchy extends SearchApiAbstractAlterCallback {
   }
 
   /**
-   * Finds all hierarchical fields for the current index.
+   * Helper method for finding all hierarchical fields of an index's type.
    *
    * @return array
    *   An array containing all hierarchical fields of the index, structured as

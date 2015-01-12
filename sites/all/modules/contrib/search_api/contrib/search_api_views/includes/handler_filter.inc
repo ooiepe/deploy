@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiViewsHandlerFilter.
- */
-
-/**
  * Views filter handler base class for handling all "normal" cases.
  */
 class SearchApiViewsHandlerFilter extends views_handler_filter {

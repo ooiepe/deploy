@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiViewsHandlerArgumentString.
- */
-
-/**
  * Views argument handler class for handling string fields.
  */
 class SearchApiViewsHandlerArgumentString extends SearchApiViewsHandlerArgument {

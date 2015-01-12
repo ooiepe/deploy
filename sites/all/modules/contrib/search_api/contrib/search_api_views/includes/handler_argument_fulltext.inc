@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiViewsHandlerArgumentFulltext.
- */
-
-/**
  * Views argument handler class for handling fulltext fields.
  */
 class SearchApiViewsHandlerArgumentFulltext extends SearchApiViewsHandlerArgument {

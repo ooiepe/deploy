@@ -109,12 +109,7 @@ class SearchApiFacetapiAdapter extends FacetapiAdapter {
   public function addFacet(array $facet, SearchApiQueryInterface $query) {
     if (isset($this->fields[$facet['name']])) {
       $options = &$query->getOptions();
-      $facet_info = $this->fields[$facet['name']];
-      if (!empty($facet['query_options'])) {
-        // Let facet-specific query options override the set options.
-        $facet_info = $facet['query_options'] + $facet_info;
-      }
-      $options['search_api_facets'][$facet['name']] = $facet_info;
+      $options['search_api_facets'][$facet['name']] = $this->fields[$facet['name']];
     }
   }
 
@@ -144,7 +139,7 @@ class SearchApiFacetapiAdapter extends FacetapiAdapter {
       // I suspect that http://drupal.org/node/593658 would help.
       // For now, just taking the first current search for this index. :-/
       foreach (search_api_current_search() as $search) {
-        list($query) = $search;
+        list($query, $results) = $search;
         if ($query->getIndex()->machine_name == $index_id) {
           $this->current_search = $search;
         }

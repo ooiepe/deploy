@@ -90,8 +90,7 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
 
     // Set the correct default value in case the admin-set value is used (and a
     // value is present). The value is used if the form is either not exposed,
-    // or the exposed form wasn't submitted yet. (There doesn't seem to be an
-    // easier way to check for that.)
+    // or the exposed form wasn't submitted yet (there is
     if ($this->value && (empty($form_state['input']) || !empty($form_state['input']['live_preview']))) {
       $form['value']['#default_value'] = $this->ids_to_strings($this->value);
     }
@@ -103,13 +102,11 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
   public function value_validate($form, &$form_state) {
     if (!empty($form['value'])) {
       $value = &$form_state['values']['options']['value'];
-      if (strlen($value)) {
-        $values = $this->isMultiValued($form_state['values']['options']) ? drupal_explode_tags($value) : array($value);
-        $ids = $this->validate_entity_strings($form['value'], $values);
+      $values = $this->isMultiValued($form_state['values']['options']) ? drupal_explode_tags($value) : array($value);
+      $ids = $this->validate_entity_strings($form['value'], $values);
 
-        if ($ids) {
-          $value = $ids;
-        }
+      if ($ids) {
+        $value = $ids;
       }
     }
   }
@@ -138,7 +135,6 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
       return;
     }
 
-    $this->validated_exposed_input = FALSE;
     $identifier = $this->options['expose']['identifier'];
     $input = $form_state['values'][$identifier];
 
@@ -147,13 +143,13 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
       $input = $this->options['group_info']['group_items'][$input]['value'];
     }
 
-    if (!strlen($input)) {
-      return;
-    }
     $values = $this->isMultiValued() ? drupal_explode_tags($input) : array($input);
 
     if (!$this->options['is_grouped'] || ($this->options['is_grouped'] && ($input != 'All'))) {
       $this->validated_exposed_input = $this->validate_entity_strings($form[$identifier], $values);
+    }
+    else {
+      $this->validated_exposed_input = FALSE;
     }
   }
 
@@ -179,9 +175,6 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
    * {@inheritdoc}
    */
   public function admin_summary() {
-    if (!is_array($this->value)) {
-      $this->value = $this->value ? array($this->value) : array();
-    }
     $value = $this->value;
     $this->value = empty($value) ? '' : $this->ids_to_strings($value);
     $ret = parent::admin_summary();
@@ -200,15 +193,13 @@ abstract class SearchApiViewsHandlerFilterEntity extends SearchApiViewsHandlerFi
       $this->query->condition($this->real_field, NULL, '<>', $this->options['group']);
     }
     elseif (is_array($this->value)) {
-      $all_of = $this->operator === 'all of';
-      $operator = $all_of ? '=' : $this->operator;
       if (count($this->value) == 1) {
-        $this->query->condition($this->real_field, reset($this->value), $operator, $this->options['group']);
+        $this->query->condition($this->real_field, reset($this->value), $this->operator, $this->options['group']);
       }
       else {
-        $filter = $this->query->createFilter($operator === '<>' || $all_of ? 'AND' : 'OR');
+        $filter = $this->query->createFilter($this->operator === '<>' || $this->operator === 'all of' ? 'AND' : 'OR');
         foreach ($this->value as $value) {
-          $filter->condition($this->real_field, $value, $operator);
+          $filter->condition($this->real_field, $value, $this->operator === 'all of' ? '=' : $this->operator);
         }
         $this->query->filter($filter, $this->options['group']);
       }

@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Integrates the Search API with Views.
- */
-
-/**
  * Implements hook_views_api().
  */
 function search_api_views_views_api() {
@@ -17,7 +12,7 @@ function search_api_views_views_api() {
 /**
  * Implements hook_search_api_index_insert().
  */
-function search_api_views_search_api_index_insert() {
+function search_api_views_search_api_index_insert(SearchApiIndex $index) {
   // Make the new index available for views.
   views_invalidate_cache();
 }

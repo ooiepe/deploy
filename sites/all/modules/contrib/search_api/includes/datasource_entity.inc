@@ -6,12 +6,18 @@
  */
 
 /**
- * Represents a datasource for all entities known to the Entity API.
+ * Data source for all entities known to the Entity API.
  */
 class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceController {
 
   /**
-   * {@inheritdoc}
+   * Return information on the ID field for this controller's type.
+   *
+   * @return array
+   *   An associative array containing the following keys:
+   *   - key: The property key for the ID field, as used in the item wrapper.
+   *   - type: The type of the ID field. Has to be one of the types from
+   *     search_api_field_types(). List types ("list<*>") are not allowed.
    */
   public function getIdFieldInfo() {
     $info = entity_get_info($this->entityType);
@@ -37,7 +43,13 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Load items of the type of this data source controller.
+   *
+   * @param array $ids
+   *   The IDs of the items to laod.
+   *
+   * @return array
+   *   The loaded items, keyed by ID.
    */
   public function loadItems(array $ids) {
     $items = entity_load($this->entityType, $ids);
@@ -53,14 +65,32 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Get a metadata wrapper for the item type of this data source controller.
+   *
+   * @param $item
+   *   Unless NULL, an item of the item type for this controller to be wrapped.
+   * @param array $info
+   *   Optionally, additional information that should be used for creating the
+   *   wrapper. Uses the same format as entity_metadata_wrapper().
+   *
+   * @return EntityMetadataWrapper
+   *   A wrapper for the item type of this data source controller, according to
+   *   the info array, and optionally loaded with the given data.
+   *
+   * @see entity_metadata_wrapper()
    */
   public function getMetadataWrapper($item = NULL, array $info = array()) {
     return entity_metadata_wrapper($this->entityType, $item, $info);
   }
 
   /**
-   * {@inheritdoc}
+   * Get the unique ID of an item.
+   *
+   * @param $item
+   *   An item of this controller's type.
+   *
+   * @return
+   *   Either the unique ID of the item, or NULL if none is available.
    */
   public function getItemId($item) {
     $id = entity_id($this->entityType, $item);
@@ -68,7 +98,13 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Get a human-readable label for an item.
+   *
+   * @param $item
+   *   An item of this controller's type.
+   *
+   * @return
+   *   Either a human-readable label for the item, or NULL if none is available.
    */
   public function getItemLabel($item) {
     $label = entity_label($this->entityType, $item);
@@ -76,7 +112,15 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Get a URL at which the item can be viewed on the web.
+   *
+   * @param $item
+   *   An item of this controller's type.
+   *
+   * @return
+   *   Either an array containing the 'path' and 'options' keys used to build
+   *   the URL of the item, and matching the signature of url(), or NULL if the
+   *   item has no URL of its own.
    */
   public function getItemUrl($item) {
     if ($this->entityType == 'file') {
@@ -93,7 +137,18 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Initialize tracking of the index status of items for the given indexes.
+   *
+   * All currently known items of this data source's type should be inserted
+   * into the tracking table for the given indexes, with status "changed". If
+   * items were already present, these should also be set to "changed" and not
+   * be inserted again.
+   *
+   * @param array $indexes
+   *   The SearchApiIndex objects for which item tracking should be initialized.
+   *
+   * @throws SearchApiDataSourceException
+   *   If any of the indexes doesn't use the same item type as this controller.
    */
   public function startTracking(array $indexes) {
     if (!$this->table) {
@@ -135,7 +190,14 @@ class SearchApiEntityDataSourceController extends SearchApiAbstractDataSourceCon
   }
 
   /**
-   * {@inheritdoc}
+   * Helper method that can be used by subclasses instead of implementing startTracking().
+   *
+   * Returns the IDs of all items that are known for this controller's type.
+   *
+   * Will be used when the entity type doesn't specify a "base table".
+   *
+   * @return array
+   *   An array containing all item IDs for this type.
    */
   protected function getAllItemIds() {
     return array_keys(entity_load($this->entityType));

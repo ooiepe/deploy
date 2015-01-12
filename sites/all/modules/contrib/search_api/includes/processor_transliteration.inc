@@ -1,11 +1,6 @@
 <?php
 
 /**
- * @file
- * Contains SearchApiTransliteration.
- */
-
-/**
  * Processor for making searches insensitive to accents and other non-ASCII characters.
  */
 class SearchApiTransliteration extends SearchApiAbstractProcessor {
