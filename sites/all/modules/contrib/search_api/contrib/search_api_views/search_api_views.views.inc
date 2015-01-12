@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Views hook implementations for the Search API Views module.
+ */
+
+/**
  * Implements hook_views_data().
  */
 function search_api_views_views_data() {
@@ -129,8 +134,8 @@ function search_api_views_views_data() {
         if (isset($field['entity_type']) && $field['entity_type'] === 'taxonomy_term') {
           $field_id = ($pos = strrpos($key, ':')) ? substr($key, $pos + 1) : $key;
           $field_info = field_info_field($field_id);
-          if (isset($field_info['settings']['allowed_values'][0]['vocabulary'])) {
-            $vocabulary_fields[$field_info['settings']['allowed_values'][0]['vocabulary']][] = $key;
+          if ($vocabulary = _search_api_views_get_field_vocabulary($field_info)) {
+            $vocabulary_fields[$vocabulary][] = $key;
           }
           else {
             $vocabulary_fields[''][] = $key;
@@ -179,7 +184,7 @@ function _search_api_views_add_handlers($id, array $field, EntityMetadataWrapper
   if ($inner_type == 'text') {
     $table[$id] += array(
       'argument' => array(
-        'handler' => 'SearchApiViewsHandlerArgument',
+        'handler' => 'SearchApiViewsHandlerArgumentString',
       ),
       'filter' => array(
         'handler' => 'SearchApiViewsHandlerFilterText',
@@ -188,9 +193,9 @@ function _search_api_views_add_handlers($id, array $field, EntityMetadataWrapper
     return;
   }
 
-  if ($options = $wrapper->optionsList('view')) {
+  $info = $wrapper->info();
+  if (isset($info['options list']) && is_callable($info['options list'])) {
     $table[$id]['filter']['handler'] = 'SearchApiViewsHandlerFilterOptions';
-    $table[$id]['filter']['options'] = $options;
     $table[$id]['filter']['multi-valued'] = search_api_is_list_type($type);
   }
   elseif ($inner_type == 'boolean') {
@@ -204,9 +209,20 @@ function _search_api_views_add_handlers($id, array $field, EntityMetadataWrapper
   }
   elseif (isset($field['entity_type']) && $field['entity_type'] === 'taxonomy_term') {
     $table[$id]['filter']['handler'] = 'SearchApiViewsHandlerFilterTaxonomyTerm';
-    $info = $wrapper->info();
     $field_info = field_info_field($info['name']);
-    $table[$id]['filter']['vocabulary'] = $field_info['settings']['allowed_values'][0]['vocabulary'];
+    // For the "Parent terms" and "All parent terms" properties, we can
+    // extrapolate the vocabulary from the parent in the selector. (E.g.,
+    // for "field_tags:parent" we can use the information of "field_tags".)
+    // Otherwise, we can't include any vocabulary information.
+    if (!$field_info && ($info['name'] == 'parent' || $info['name'] == 'parents_all')) {
+      if (!empty($table[$id]['real field'])) {
+        $parts = explode(':', $table[$id]['real field']);
+        $field_info = field_info_field($parts[count($parts) - 2]);
+      }
+    }
+    if ($vocabulary = _search_api_views_get_field_vocabulary($field_info)) {
+      $table[$id]['filter']['vocabulary'] = $vocabulary;
+    }
   }
   else {
     $table[$id]['filter']['handler'] = 'SearchApiViewsHandlerFilter';
@@ -275,4 +291,32 @@ function search_api_views_views_plugins() {
   }
 
   return $ret;
+}
+
+/**
+ * Returns the vocabulary machine name of a term field.
+ *
+ * @param array|null $field_info
+ *   The field's field info array, or NULL if the field is not provided by the
+ *   Field API. See the return value of field_info_field().
+ *
+ * @return string|null
+ *   If the field contains taxonomy terms of a single vocabulary (which could be
+ *   determined), that vocabulary's machine name; NULL otherwise.
+ */
+function _search_api_views_get_field_vocabulary($field_info) {
+  // Test for "Term reference" fields.
+  if (isset($field_info['settings']['allowed_values'][0]['vocabulary'])) {
+    return $field_info['settings']['allowed_values'][0]['vocabulary'];
+  }
+  // Test for "Entity reference" fields.
+  elseif (isset($field_info['settings']['handler']) && $field_info['settings']['handler'] === 'base') {
+    if (!empty($field_info['settings']['handler_settings']['target_bundles'])) {
+      $bundles = $field_info['settings']['handler_settings']['target_bundles'];
+      if (count($bundles) == 1) {
+        return key($bundles);
+      }
+    }
+  }
+  return NULL;
 }

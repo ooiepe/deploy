@@ -22,7 +22,8 @@
  *   - description: A translated string to be shown to administrators when
  *     selecting a service class. Should contain all peculiarities of the
  *     service class, like field type support, supported features (like facets),
- *     the "direct" parse mode and other specific things to keep in mind.
+ *     the "direct" parse mode and other specific things to keep in mind. The
+ *     text can contain HTML.
  *   - class: The service class, which has to implement the
  *     SearchApiServiceInterface interface.
  *
@@ -334,7 +335,7 @@ function hook_search_api_items_indexed(SearchApiIndex $index, array $item_ids) {
  * Lets modules alter a search query before executing it.
  *
  * @param SearchApiQueryInterface $query
- *   The SearchApiQueryInterface object representing the search query.
+ *   The search query being executed.
  */
 function hook_search_api_query_alter(SearchApiQueryInterface $query) {
   // Exclude entities with ID 0. (Assume the ID field is always indexed.)
