@@ -142,16 +142,19 @@ function redirect_save_edit_submit($form, &$form_state) {
   node_form_submit($form, $form_state);
   // only redirect if using the Save & Edit button
   if ($form_state['clicked_button']['#id'] == 'edit-save-edit' || $form_state['clicked_button']['#id'] == 'edit-actions-save-edit') {
-    // change redirect location
+    // forked to accommodate DiBs with bootstrap tab 
+    // change redirect location    
     if (isset($_REQUEST['destination'])) {
-      $form_state['redirect'] = url('node/' . $form_state['nid'] . '/edit',
-        array(
-          'query' => array(
-            'destination' => $_REQUEST['destination'],
-          ),
-          'absolute' => TRUE,
-        )
+      //move inline array from url function to variable 
+      $url_options = array(
+        'query' => array(
+          'destination' => $_REQUEST['destination'],
+        ),
+        'absolute' => TRUE,
       );
+      //add fragment value if exsits
+      if(isset($form_state['input']['fragment']) && $form_state['input']['fragment']) $url_options['fragment'] = $form_state['input']['fragment'];
+      $form_state['redirect'] = url('node/' . $form_state['nid'] . '/edit', $url_options);
       $_GET['destination'] = $form_state['redirect'];
       unset($_REQUEST['destination']);
     }
